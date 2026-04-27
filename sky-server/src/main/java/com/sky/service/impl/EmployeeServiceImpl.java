@@ -94,4 +94,14 @@ public class EmployeeServiceImpl implements EmployeeService {
 
     }
 
+    @Override
+    public void status(Integer status, Long id) {
+        Employee employee = new Employee();
+        employee.setId(id);
+        employee.setStatus(status);
+//        employee.setUpdateTime(LocalDateTime.now());
+//        employee.setUpdateUser(BaseContext.getCurrentId());
+        employeeMapper.updateById(employee);
+    }
+
 }
