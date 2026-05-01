@@ -10,6 +10,18 @@
         values (#{categoryId}, #{name}, #{price}, #{status}, #{description}, #{image})
 
     </insert>
+    <update id="update">
+        update setmeal
+        <set>
+            <if test="name != null and name != ''">name = #{name},</if>
+            <if test="categoryId != null">category_id = #{categoryId},</if>
+            <if test="price != null">price = #{price},</if>
+            <if test="image != null and image != ''">image = #{image},</if>
+            <if test="description != null and description != ''">description = #{description},</if>
+            <if test="status != null">status = #{status},</if>
+        </set>
+        where id = #{id}
+    </update>
     <select id="pageQuery" resultType="com.sky.entity.Setmeal">
         select s.*, c.name categoryName from setmeal s left join category c on s.category_id = c.id
         <where>
