@@ -154,6 +154,21 @@
         <artifactId>jaxb-runtime</artifactId>
         <version>2.3.3</version>
         </dependency>
+
+
+        <dependency>
+            <groupId>org.junit</groupId>
+            <artifactId>junit-bom</artifactId>
+            <version>5.9.3</version> <!-- 使用一个较新的统一版本 -->
+            <type>pom</type>
+            <scope>import</scope>
+        </dependency>
+
+        <dependency>
+            <groupId>org.junit.jupiter</groupId>
+            <artifactId>junit-jupiter</artifactId>
+            <scope>test</scope>
+        </dependency>
     </dependencies>
 
     <build>
