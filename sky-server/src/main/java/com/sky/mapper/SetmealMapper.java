@@ -34,6 +34,7 @@ public interface SetmealMapper {
     @Select("select  * from setmeal where id = #{id}")
     Setmeal getById(Long id);
 
+    @Autofill(OperationType.UPDATE)
     void update(Setmeal setmeal);
 
     /**
@@ -53,5 +54,6 @@ public interface SetmealMapper {
             "where sd.setmeal_id = #{setmealId}")
     List<DishItemVO> getDishItemBySetmealId(Long setmealId);
 
+    void updateBatchStatus(List<Long> setmealIds, Integer disable);
 }
 

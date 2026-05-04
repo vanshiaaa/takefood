@@ -1,6 +1,5 @@
 package com.sky.service.impl;
 
-import com.github.pagehelper.Constant;
 import com.github.pagehelper.Page;
 import com.github.pagehelper.PageHelper;
 import com.sky.constant.MessageConstant;
@@ -9,14 +8,15 @@ import com.sky.dto.DishDTO;
 import com.sky.dto.DishPageQueryDTO;
 import com.sky.entity.Dish;
 import com.sky.entity.DishFlavor;
+import com.sky.entity.Setmeal;
 import com.sky.exception.DeletionNotAllowedException;
 import com.sky.mapper.DishFlavorMapper;
 import com.sky.mapper.DishMapper;
 import com.sky.mapper.SetmealDishMapper;
+import com.sky.mapper.SetmealMapper;
 import com.sky.result.PageResult;
 import com.sky.service.DishService;
 import com.sky.vo.DishVO;
-import org.aspectj.apache.bcel.classfile.ConstantNameAndType;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -34,6 +34,8 @@ public class DishServiceImpl implements DishService {
     private DishFlavorMapper dishFlavorMapper;
     @Autowired
     private SetmealDishMapper setmealDishMapper;
+    @Autowired
+    private SetmealMapper setmealMapper;
     @Transactional
     @Override
     public void saveWithFlavor(DishDTO dishDTO) {
@@ -162,6 +164,26 @@ public class DishServiceImpl implements DishService {
         }
 
         return dishVOList;
+    }
+
+    @Override
+    public void updateStatus(Integer status, Long id) {
+        Dish dish = Dish.builder()
+                .id(id)
+                .status(status)
+                .build();
+        dishMapper.update(dish);
+
+        // 2. 如果是禁用菜品 → 同步禁用关联套餐
+        if (status == StatusConstant.DISABLE) {
+            // 根据菜品ID 查询所有关联的套餐ID
+            List<Long> setmealIds = setmealDishMapper.selectByDishId(id);
+
+            // 批量更新套餐状态（比循环单条更新性能好很多）
+            if (setmealIds != null && !setmealIds.isEmpty()) {
+                setmealMapper.updateBatchStatus(setmealIds, StatusConstant.DISABLE);
+            }
+        }
     }
 
 

@@ -45,6 +45,9 @@ public interface DishMapper {
     List<Dish> getBySetmealId(Long id);
 
     List<Dish> list(Dish dish);
+
+    @Autofill(OperationType.UPDATE)
+    void updateStatus(Integer status);
 //
 //    List<Dish> list(Dish dish);
 }

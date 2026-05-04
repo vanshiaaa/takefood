@@ -22,6 +22,14 @@
         </set>
         where id = #{id}
     </update>
+    <update id="updateBatchStatus">
+        update setmeal
+        set status = #{status}
+        where id in
+        <foreach collection="setmealIds" open="(" separator="," close=")" item="id">
+            #{id}
+        </foreach>
+    </update>
     <select id="pageQuery" resultType="com.sky.entity.Setmeal">
         select s.*, c.name categoryName from setmeal s left join category c on s.category_id = c.id
         <where>
