@@ -24,12 +24,13 @@ public class UserServiceImpl implements UserService {
     private UserMapper userMapper;
     @Autowired
     private WeChatProperties weChatProperties;
+
     @Override
     public User wxLogin(UserLoginDTO userLoginDTO) {
         String openid = getOpenid(userLoginDTO.getCode());
 
         //判断openid是否为空，如果为空表示登录失败，抛出业务异常
-        if(openid == null){
+        if (openid == null) {
             throw new LoginFailedException(MessageConstant.LOGIN_FAILED);
         }
 
@@ -37,7 +38,7 @@ public class UserServiceImpl implements UserService {
         User user = userMapper.getByOpenid(openid);
 
         //如果是新用户，自动完成注册
-        if(user == null){
+        if (user == null) {
             user = User.builder()
                     .openid(openid)
                     .createTime(LocalDateTime.now())
@@ -51,16 +52,17 @@ public class UserServiceImpl implements UserService {
 
     /**
      * 调用微信接口服务，获取微信用户的openid
+     *
      * @param code
      * @return
      */
-    private String getOpenid(String code){
+    private String getOpenid(String code) {
         //调用微信接口服务，获得当前微信用户的openid
         Map<String, String> map = new HashMap<>();
-        map.put("appid",weChatProperties.getAppid());
-        map.put("secret",weChatProperties.getSecret());
-        map.put("js_code",code);
-        map.put("grant_type","authorization_code");
+        map.put("appid", weChatProperties.getAppid());
+        map.put("secret", weChatProperties.getSecret());
+        map.put("js_code", code);
+        map.put("grant_type", "authorization_code");
         String json = HttpClientUtil.doGet(WX_LOGIN, map);
 
         JSONObject jsonObject = JSON.parseObject(json);
