@@ -15,6 +15,7 @@ import com.sky.result.PageResult;
 import com.sky.service.OrderService;
 import com.sky.utils.WeChatPayUtil;
 import com.sky.vo.OrderPaymentVO;
+import com.sky.vo.OrderStatisticsVO;
 import com.sky.vo.OrderSubmitVO;
 import com.sky.vo.OrderVO;
 import org.springframework.beans.BeanUtils;
@@ -25,6 +26,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 public class OrderServiceImpl implements OrderService {
@@ -238,6 +240,56 @@ public class OrderServiceImpl implements OrderService {
         }
         shoppingCartMapper.insertbatch(shoppingCartList);
 
+    }
+
+    /**
+     * 订单搜索
+     * @param ordersPageQueryDTO
+     * @return
+     */
+    @Override
+    public PageResult conditionSearch(OrdersPageQueryDTO ordersPageQueryDTO) {
+        PageHelper.startPage(ordersPageQueryDTO.getPage(), ordersPageQueryDTO.getPageSize());
+        Page<Orders> ordersPage = orderMapper.pageQuery(ordersPageQueryDTO);
+        List<OrderVO> orderVOlist = new ArrayList();
+        if (ordersPage != null && ordersPage.getTotal() > 0) {
+            for (Orders orders : ordersPage) {
+                Long orderId = orders.getId();// 订单id
+
+                // 查询订单明细
+                List<OrderDetail> orderDetails = orderDetailMapper.getByOrderId(orderId);
+
+                OrderVO orderVO = new OrderVO();
+                BeanUtils.copyProperties(orders, orderVO);
+                orderVO.setOrderDetailList(orderDetails);
+
+                //根据订单表查询菜品名称
+
+                String orderDishes = orderDetails.stream()
+                        .map(x -> x.getName() + "*" + x.getNumber() + ";")
+                        .collect(Collectors.joining(""));
+
+                orderVO.setOrderDishes(orderDishes);
+
+                orderVOlist.add(orderVO);
+            }
+        }
+
+
+        return new PageResult(ordersPage.getTotal(), orderVOlist);
+    }
+
+    @Override
+    public OrderStatisticsVO statistics() {
+        Integer confirmed = orderMapper.getCountByStatus(Orders.CONFIRMED);
+        Integer deliveryInProgress = orderMapper.getCountByStatus(Orders.DELIVERY_IN_PROGRESS);
+        Integer toBeConfirmed = orderMapper.getCountByStatus(Orders.TO_BE_CONFIRMED);
+
+        OrderStatisticsVO orderStatisticsVO = new OrderStatisticsVO();
+        orderStatisticsVO.setConfirmed(confirmed);
+        orderStatisticsVO.setDeliveryInProgress(deliveryInProgress);
+        orderStatisticsVO.setToBeConfirmed(toBeConfirmed);
+        return orderStatisticsVO;
     }
 
 
