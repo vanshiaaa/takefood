@@ -72,4 +72,7 @@ public interface OrderService {
     void deliver(Long id);
 
     void complete(Long id);
+
+    void reminder(Long id);
+
 }
