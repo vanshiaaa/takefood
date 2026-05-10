@@ -2,8 +2,7 @@ package com.sky.controller.admin;
 
 import com.sky.result.Result;
 import com.sky.service.ReportService;
-import com.sky.vo.TurnoverReportVO;
-import com.sky.vo.UserReportVO;
+import com.sky.vo.*;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.format.annotation.DateTimeFormat;
@@ -55,5 +54,37 @@ public class ReportController {
         UserReportVO userReportVO = reportService.userStatistics(begin, end);
 
         return Result.success(userReportVO);
+    }
+
+    /**
+     * 订单统计
+     * @param begin
+     * @param end
+     * @return
+     */
+    @GetMapping("/ordersStatistics")
+    public Result<OrderReportVO> ordersreport(
+            @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss") LocalDate begin,
+            @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss") LocalDate end
+    ) {
+        OrderReportVO orderReportVO = reportService.orderreport(begin, end);
+
+        return Result.success(orderReportVO);
+    }
+
+    /**
+     * 查询销售额前10的菜品
+     * @param begin
+     * @param end
+     * @return
+     */
+    @GetMapping("/top10")
+    public Result<SalesTop10ReportVO> top10(
+            @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss") LocalDate begin,
+            @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss") LocalDate end
+    ) {
+        SalesTop10ReportVO salestop10 = reportService.salestop10(begin, end);
+
+        return Result.success(salestop10);
     }
 }

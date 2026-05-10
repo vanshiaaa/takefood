@@ -1,6 +1,7 @@
 package com.sky.mapper;
 
 import com.github.pagehelper.Page;
+import com.sky.dto.GoodsSalesDTO;
 import com.sky.dto.OrdersPageQueryDTO;
 import com.sky.entity.Orders;
 import org.apache.ibatis.annotations.Mapper;
@@ -44,5 +45,13 @@ public interface OrderMapper {
     Integer getCountByStatus(Integer status);
 
     Double sumByMap(Map map);
+    /**
+     * 根据条件查询订单数量
+     * @param map
+     * @return
+     */
+    Integer countByMap(Map map);
+
+    List<GoodsSalesDTO> getsalestop10(LocalDateTime begin, LocalDateTime end);
 }
 
