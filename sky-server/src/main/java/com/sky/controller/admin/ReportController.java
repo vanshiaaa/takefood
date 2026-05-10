@@ -3,6 +3,7 @@ package com.sky.controller.admin;
 import com.sky.result.Result;
 import com.sky.service.ReportService;
 import com.sky.vo.*;
+import jakarta.servlet.http.HttpServletResponse;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.format.annotation.DateTimeFormat;
@@ -86,5 +87,15 @@ public class ReportController {
         SalesTop10ReportVO salestop10 = reportService.salestop10(begin, end);
 
         return Result.success(salestop10);
+    }
+
+    /**
+     * 导出营业数据
+     * @param response
+     */
+    @GetMapping("/export")
+    public void exportBusinessData(HttpServletResponse response){
+        reportService.exportBusinessData(response);
+
     }
 }
